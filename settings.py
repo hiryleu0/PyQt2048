@@ -1,0 +1,2 @@
+SIZE = 4
+WIN_VALUE = 16
