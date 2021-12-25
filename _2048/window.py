@@ -11,6 +11,8 @@ class Window:
     def __init__(self, size):
         self.app = QApplication(sys.argv)
         self.widget = QWidget()
+        self.message_box = QMessageBox()
+
         widget_size = size * BUTTON_SIZE + (size + 1) * BUTTON_MARGIN
         self.widget.setFixedSize(widget_size, widget_size)
 
@@ -49,7 +51,11 @@ class Window:
         self.app.exec_()
 
     def win(self):
-        print('WON!')
+        result = QMessageBox.question(self.widget, "Success!", "Wanna play again?",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        return result == QMessageBox.Yes
 
     def lose(self):
-        print('LOST!')
+        result = QMessageBox.critical(self.widget, "Failure!", "Wanna play again?",
+                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        return result == QMessageBox.Yes
