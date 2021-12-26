@@ -1,2 +1,0 @@
-SIZE = 4
-WIN_VALUE = 2048

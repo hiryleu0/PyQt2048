@@ -87,6 +87,6 @@ class Board:
     def is_won(self, win_value):
         for i in range(self.size):
             for j in range(self.size):
-                if self.board[i][j] == win_value:
+                if self.board[i][j] >= win_value:
                     return True
         return False

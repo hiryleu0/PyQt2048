@@ -1,9 +1,11 @@
 from enum import Enum
 
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 from .window import Window
 from .board import Board
+from .constants import *
 
 
 class GameState(Enum):
@@ -13,14 +15,37 @@ class GameState(Enum):
 
 
 class Game:
-    def __init__(self, size, win_value):
-        self.win_value = win_value
+    def __init__(self):
+        self.win_value = WIN_VALUE
         self.state = GameState.STARTED
-        self.window = Window(size)
-        self.board = Board(size)
+        self.window = Window(SIZE)
+        self.board = Board(SIZE)
         x, y = self.board.generate_random_two()
         self.window.update_label(x, y, 2)
         self.window.widget.keyPressEvent = self.generate_key_press_handler()
+        game_menu = self.window.menu.addMenu("Game")
+        new_game_action = game_menu.addAction("New game")
+        new_game_action.setShortcut("F2")
+        new_game_action.triggered.connect(self.generate_new_game_handler())
+        exit_action = game_menu.addAction("Exit")
+        exit_action.setShortcut("Alt+F4")
+        exit_action.triggered.connect(self.generate_exit_game_handler())
+        settings_menu = self.window.menu.addMenu("Settings")
+        win_value_menu = settings_menu.addMenu("Win value")
+        value = 2
+        for i in range(2, 12):
+            value = value * 2
+            size_action: QAction = win_value_menu.addAction(str(value))
+            size_action.setCheckable(True)
+            if value == WIN_VALUE:
+                size_action.setChecked(True)
+                self.checked_win_value_action = size_action
+            size_action.triggered.connect(self.generate_win_value_change_handler(value, size_action))
+
+        about_action = self.window.menu.addAction("About")
+        about_action.setShortcut("Ctrl+H")
+        about_action.triggered.connect(self.generate_about_handler())
+        self.window.menu.show()
 
     def start_again(self):
         self.state = GameState.STARTED
@@ -63,6 +88,40 @@ class Game:
                     self.start_again()
 
         return key_press_handler
+
+    def generate_new_game_handler(self):
+        def new_game_handler(_):
+            result = QMessageBox.question(self.window.widget, "New game", "Are you sure?",
+                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if result == QMessageBox.Yes:
+                self.start_again()
+        return new_game_handler
+
+    def generate_exit_game_handler(self):
+        def exit_game_handler(_):
+            result = QMessageBox.question(self.window.widget, "Exit game", "Are you sure?",
+                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if result == QMessageBox.Yes:
+                self.window.app.exit(0)
+        return exit_game_handler
+
+    def generate_win_value_change_handler(self, value, action):
+        def win_value_change_handler(_):
+            self.win_value = value
+            self.checked_win_value_action.setChecked(False)
+            self.checked_win_value_action = action
+            action.setChecked(True)
+            result = self.board.is_won(value)
+            if result:
+                self.window.win()
+            else:
+                self.state = GameState.STARTED
+        return win_value_change_handler
+
+    def generate_about_handler(self):
+        def about_handler(_):
+            QMessageBox.about(self.window.widget, "About", "Simple 2048 powered by PyQt5")
+        return about_handler
 
     def start(self):
         self.window.show(100, 100)

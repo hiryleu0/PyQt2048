@@ -13,8 +13,12 @@ class Window:
         self.widget = QWidget()
         self.message_box = QMessageBox()
 
-        widget_size = size * BUTTON_SIZE + (size + 1) * BUTTON_MARGIN
-        self.widget.setFixedSize(widget_size, widget_size)
+        self.menu = QMenuBar(self.widget)
+        self.menu.setFixedHeight(MENU_HEIGHT)
+
+        widget_width = size * BUTTON_SIZE + (size + 1) * BUTTON_MARGIN
+        widget_height = widget_width + MENU_HEIGHT
+        self.widget.setFixedSize(widget_width, widget_height)
 
         shift = BUTTON_MARGIN + BUTTON_SIZE
         self.labels = []
@@ -25,14 +29,15 @@ class Window:
                 label.setFixedSize(BUTTON_SIZE, BUTTON_SIZE)
 
                 x_shift = BUTTON_MARGIN + j * shift
-                y_shift = BUTTON_MARGIN + i * shift
+                y_shift = MENU_HEIGHT + BUTTON_MARGIN + i * shift
                 label.move(x_shift, y_shift)
                 label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 label.setAlignment(Qt.AlignCenter)
                 label.setText('')
                 label.setStyleSheet('background-color: ' + COLOR[0] + ';'
                                                                       'border: 2px solid black;'
-                                                                      'border-radius: 5px;')
+                                                                      'border-radius: 5px;'
+                                                                      'font-size: 20px;')
                 labels_row.append(label)
             self.labels.append(labels_row)
         self.widget.setWindowTitle("PyGt5 2048")
@@ -42,7 +47,8 @@ class Window:
         label.setText(str(value if value > 0 else ''))
         label.setStyleSheet('background-color: ' + COLOR[value] + ';'
                                                                   'border: 2px solid black;'
-                                                                  'border-radius: 5px;')
+                                                                  'border-radius: 5px;'
+                                                                  'font-size: 20px;')
         label.repaint()
 
     def show(self, x, y):

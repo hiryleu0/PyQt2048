@@ -3,7 +3,8 @@
 It is simple 2048 created by me to practise python and PyQt5 library.
 
 ## Game
-Use W, S, A, D keys to play!
+Use W, S, A, D keys to play. Using menu you can start new game, exit or change
+required value to win!
 
 ## Requirements
 * PyQt5
@@ -16,6 +17,5 @@ Run command from main directory
 
 ## To do
 * Animations for tiles when appearing and merging
-* Menu
-* Larger labels
 * Write tests
+* Add icons
