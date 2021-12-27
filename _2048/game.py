@@ -113,7 +113,8 @@ class Game:
             action.setChecked(True)
             result = self.board.is_won(value)
             if result:
-                self.window.win()
+                if self.window.win():
+                    self.start_again()
             else:
                 self.state = GameState.STARTED
         return win_value_change_handler
