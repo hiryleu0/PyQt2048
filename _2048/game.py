@@ -15,14 +15,7 @@ class GameState(Enum):
 
 
 class Game:
-    def __init__(self):
-        self.win_value = WIN_VALUE
-        self.state = GameState.STARTED
-        self.window = Window(SIZE)
-        self.board = Board(SIZE)
-        x, y = self.board.generate_random_two()
-        self.window.update_label(x, y, 2)
-        self.window.widget.keyPressEvent = self.generate_key_press_handler()
+    def __init_game_menu_actions__(self):
         game_menu = self.window.menu.addMenu("Game")
         new_game_action = game_menu.addAction("New game")
         new_game_action.setShortcut("F2")
@@ -30,6 +23,8 @@ class Game:
         exit_action = game_menu.addAction("Exit")
         exit_action.setShortcut("Alt+F4")
         exit_action.triggered.connect(self.generate_exit_game_handler())
+
+    def __init_settings_menu_actions__(self):
         settings_menu = self.window.menu.addMenu("Settings")
         win_value_menu = settings_menu.addMenu("Win value")
         value = 2
@@ -42,10 +37,28 @@ class Game:
                 self.checked_win_value_action = size_action
             size_action.triggered.connect(self.generate_win_value_change_handler(value, size_action))
 
+    def __init_about_menu_actions(self):
         about_action = self.window.menu.addAction("About")
         about_action.setShortcut("Ctrl+H")
         about_action.triggered.connect(self.generate_about_handler())
-        self.window.menu.show()
+
+    def __init_menu_actions__(self):
+        self.__init_game_menu_actions__()
+        self.__init_settings_menu_actions__()
+        self.__init_about_menu_actions()
+
+    def __init__(self):
+        self.win_value = WIN_VALUE
+        self.state = GameState.STARTED
+
+        self.window = Window(SIZE)
+        self.__init_menu_actions__()
+
+        self.board = Board(SIZE)
+        x, y = self.board.generate_random_two()
+        self.window.update_label(x, y, 2)
+
+        self.window.widget.keyPressEvent = self.generate_key_press_handler()
 
     def start_again(self):
         self.state = GameState.STARTED
@@ -78,13 +91,13 @@ class Game:
                     for j in range(self.board.size):
                         self.window.update_label(i, j, self.board.board[i][j])
 
-            if self.board.is_lost():
-                self.state = GameState.LOST
-                if self.window.lose():
-                    self.start_again()
-            elif self.board.is_won(self.win_value):
+            if self.board.is_won(self.win_value):
                 self.state = GameState.WON
                 if self.window.win():
+                    self.start_again()
+            elif self.board.is_lost():
+                self.state = GameState.LOST
+                if self.window.lose():
                     self.start_again()
 
         return key_press_handler

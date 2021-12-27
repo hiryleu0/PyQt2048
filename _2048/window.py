@@ -8,18 +8,26 @@ from .constants import *
 
 
 class Window:
-    def __init__(self, size):
-        self.app = QApplication(sys.argv)
-        self.widget = QWidget()
-        self.message_box = QMessageBox()
+    def __init_icon__(self):
+        self.icon = QIcon()
+        self.icon.addFile('_2048/icons/icon-16.png', QSize(16, 16))
+        self.icon.addFile('_2048/icons/icon-24.png', QSize(24, 24))
+        self.icon.addFile('_2048/icons/icon-32.png', QSize(32, 32))
+        self.icon.addFile('_2048/icons/icon-48.png', QSize(48, 48))
+        self.icon.addFile('_2048/icons/icon-256.png', QSize(256, 256))
+        self.app.setWindowIcon(self.icon)
 
+    def __init_menu__(self):
         self.menu = QMenuBar(self.widget)
         self.menu.setFixedHeight(MENU_HEIGHT)
+        self.menu.setStyleSheet('background-color: #EEE;')
 
+    def __init_widget(self, size):
         widget_width = size * BUTTON_SIZE + (size + 1) * BUTTON_MARGIN
         widget_height = widget_width + MENU_HEIGHT
         self.widget.setFixedSize(widget_width, widget_height)
 
+    def __init_labels__(self, size):
         shift = BUTTON_MARGIN + BUTTON_SIZE
         self.labels = []
         for i in range(size):
@@ -40,7 +48,16 @@ class Window:
                                                                       'font-size: 20px;')
                 labels_row.append(label)
             self.labels.append(labels_row)
+
+    def __init__(self, size):
+        self.app = QApplication(sys.argv)
+        self.widget = QWidget()
         self.widget.setWindowTitle("PyGt5 2048")
+
+        self.__init_icon__()
+        self.__init_menu__()
+        self.__init_widget(size)
+        self.__init_labels__(size)
 
     def update_label(self, x, y, value):
         label = self.labels[x][y]

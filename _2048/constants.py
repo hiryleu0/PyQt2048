@@ -5,7 +5,7 @@ SIZE = 4
 WIN_VALUE = 2048
 
 COLOR = {
-    0: "#FFFFFF",
+    0: "#EEEEEE",
     2: "#EEE4C6",
     4: "#EFE1DA",
     8: "#F3B37C",
