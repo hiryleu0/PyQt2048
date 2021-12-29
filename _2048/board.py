@@ -49,6 +49,7 @@ class Board:
         columns = c % 2 == 0
 
         moved = False
+        moved_board = [[False for _ in range(self.size)] for _ in range(self.size)]
 
         for i in range(self.size):
             j = 0 if increasing else self.size - 1
@@ -60,25 +61,35 @@ class Board:
                         k = k + 1 if increasing else k - 1
                 else:
                     while 0 <= k < self.size and \
-                            ((columns and self.board[k][i] != self.board[j][i]) or
-                             (not columns and self.board[i][k] != self.board[i][j])):
+                            ((columns and self.board[k][i] == 0) or
+                             (not columns and self.board[i][k] == 0)):
                         k = k + 1 if increasing else k - 1
 
+                    if 0 <= k < self.size and \
+                            ((columns and self.board[k][i] == self.board[j][i])
+                             or (not columns and self.board[i][k] == self.board[i][j])):
+                        k = k
+                    else:
+                        k = -1
+
+                old_value = 0
                 if 0 <= k < self.size:
                     moved = True
                     if columns:
                         old_value = self.board[j][i]
+                        moved_board[j][i] = old_value != 0
                         self.board[j][i] = self.board[j][i] + self.board[k][i]
                         self.board[k][i] = 0
                     else:
                         old_value = self.board[i][j]
+                        moved_board[i][j] = old_value != 0
                         self.board[i][j] = self.board[i][j] + self.board[i][k]
                         self.board[i][k] = 0
 
                 if 0 > k or k >= self.size or old_value != 0:
                     j = (j + 1 if increasing else j - 1)
 
-        return moved
+        return moved, moved_board
 
     def is_lost(self):
         return not (self.is_move_possible(0) or self.is_move_possible(1)

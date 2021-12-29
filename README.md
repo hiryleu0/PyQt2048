@@ -16,5 +16,4 @@ Run command from main directory
 ```
 
 ## To do
-* Animations for tiles when appearing and merging
 * Write tests

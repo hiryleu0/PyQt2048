@@ -56,7 +56,7 @@ class Game:
 
         self.board = Board(SIZE)
         x, y = self.board.generate_random_two()
-        self.window.update_label(x, y, 2)
+        self.window.update_label(x, y, 2, True)
 
         self.window.widget.keyPressEvent = self.generate_key_press_handler()
 
@@ -64,10 +64,10 @@ class Game:
         self.state = GameState.STARTED
         for i in range(self.board.size):
             for j in range(self.board.size):
-                self.window.update_label(i, j, 0)
+                self.window.update_label(i, j, 0, False)
         self.board = Board(self.board.size)
         x, y = self.board.generate_random_two()
-        self.window.update_label(x, y, 2)
+        self.window.update_label(x, y, 2, True)
 
     def generate_key_press_handler(self):
         def key_press_handler(event: QKeyEvent):
@@ -75,21 +75,25 @@ class Game:
                 return
 
             key = event.key()
-            moved = False
             if key == 87:
-                moved = self.board.make_move(0)
+                moved, moved_board = self.board.make_move(0)
             elif key == 65:
-                moved = self.board.make_move(1)
+                moved, moved_board = self.board.make_move(1)
             elif key == 83:
-                moved = self.board.make_move(2)
+                moved, moved_board = self.board.make_move(2)
             elif key == 68:
-                moved = self.board.make_move(3)
+                moved, moved_board = self.board.make_move(3)
+            else:
+                return
 
-            if moved:
-                self.board.generate_random_two()
-                for i in range(self.board.size):
-                    for j in range(self.board.size):
-                        self.window.update_label(i, j, self.board.board[i][j])
+            if not moved:
+                return
+
+            x, y = self.board.generate_random_two()
+            moved_board[x][y] = True
+            for i in range(self.board.size):
+                for j in range(self.board.size):
+                    self.window.update_label(i, j, self.board.board[i][j], moved_board[i][j])
 
             if self.board.is_won(self.win_value):
                 self.state = GameState.WON

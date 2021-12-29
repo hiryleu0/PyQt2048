@@ -105,6 +105,14 @@ class TestBoard(unittest.TestCase):
             board.make_move(i)
             self.assertEqual(board.board, expected_boards[i])
 
+    def test_make_move_4(self):
+        board = Board(4)
+        initial_board = [[2, 0, 0, 0], [4, 0, 0, 0], [2, 0, 0, 0], [0, 0, 0, 0]]
+        expected_board = [[2, 0, 0, 0], [4, 0, 0, 0], [2, 0, 0, 0], [0, 0, 0, 0]]
+        board.board = initial_board
+        board.make_move(0)
+        self.assertEqual(board.board, expected_board)
+
     def test_is_won(self):
         board = Board(3)
         board.board = [

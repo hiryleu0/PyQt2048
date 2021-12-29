@@ -34,39 +34,53 @@ class Window:
             labels_row = []
             for j in range(size):
                 label = QLabel(self.widget)
-                label.setFixedSize(BUTTON_SIZE, BUTTON_SIZE)
-
                 x_shift = BUTTON_MARGIN + j * shift
                 y_shift = MENU_HEIGHT + BUTTON_MARGIN + i * shift
-                label.move(x_shift, y_shift)
-                label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+                label.setGeometry(QRect(x_shift, y_shift, BUTTON_SIZE, BUTTON_SIZE))
                 label.setAlignment(Qt.AlignCenter)
                 label.setText('')
                 label.setStyleSheet('background-color: ' + COLOR[0] + ';'
                                                                       'border: 2px solid black;'
                                                                       'border-radius: 5px;'
                                                                       'font-size: 20px;')
-                labels_row.append(label)
+                labels_row.append((label, x_shift, y_shift))
             self.labels.append(labels_row)
 
     def __init__(self, size):
         self.app = QApplication(sys.argv)
         self.widget = QWidget()
         self.widget.setWindowTitle("PyGt5 2048")
+        self.animations = {}
 
         self.__init_icon__()
         self.__init_menu__()
         self.__init_widget(size)
         self.__init_labels__(size)
 
-    def update_label(self, x, y, value):
-        label = self.labels[x][y]
+    def generate_clear_handler(self, label):
+        def clear_handler():
+            self.animations[label] = None
+        return clear_handler
+
+    def update_label(self, x, y, value, animate):
+
+        label, x_shift, y_shift = self.labels[x][y]
         label.setText(str(value if value > 0 else ''))
         label.setStyleSheet('background-color: ' + COLOR[value] + ';'
                                                                   'border: 2px solid black;'
                                                                   'border-radius: 5px;'
                                                                   'font-size: 20px;')
-        label.repaint()
+        if not animate:
+            return
+
+        animation = QPropertyAnimation(label, b"geometry")
+        self.animations[label] = animation
+        animation.setStartValue(QRect(x_shift + 0.25 * BUTTON_SIZE, y_shift + 0.25 * BUTTON_SIZE,
+                                      0.5 * BUTTON_SIZE, 0.5 * BUTTON_SIZE))
+        animation.setEndValue(QRect(x_shift, y_shift, BUTTON_SIZE, BUTTON_SIZE))
+        animation.setDuration(200)
+        animation.finished.connect(self.generate_clear_handler(label))
+        animation.start()
 
     def show(self, x, y):
         self.widget.move(x, y)
